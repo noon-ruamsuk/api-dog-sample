@@ -12,6 +12,9 @@ const UserSchema = z.object({
   email: z.string().email().openapi({
     example: 'john@example.com',
   }),
+  role: z.string().optional().openapi({
+    example: 'user',
+  }),
   createdAt: z.string().openapi({
     example: '2024-01-01T00:00:00Z',
   }),
@@ -23,6 +26,9 @@ const CreateUserSchema = z.object({
   }),
   email: z.string().email().openapi({
     example: 'john@example.com',
+  }),
+  role: z.string().optional().openapi({
+    example: 'user',
   }),
 });
 
