@@ -1,0 +1,62 @@
+name: Generate OpenAPI Specification
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  generate-openapi:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build project
+      run: npm run build
+      
+    - name: Generate OpenAPI spec
+      run: |
+        npm run generate-openapi
+        
+    - name: Upload OpenAPI spec as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: openapi-spec
+        path: openapi.json
+        retention-days: 30
+        
+    - name: Deploy to GitHub Pages (if on main branch)
+      if: github.ref == 'refs/heads/main'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./
+        publish_branch: gh-pages
+        keep_files: true
+        force_orphan: true
+        
+    - name: Commit and push OpenAPI spec (if on main branch)
+      if: github.ref == 'refs/heads/main'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add openapi.json
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "Update OpenAPI specification [skip ci]"
+          git push
+        fi
