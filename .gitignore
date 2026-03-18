@@ -8,9 +8,6 @@ yarn-error.log*
 dist/
 build/
 
-# Generated files
-openapi.json
-
 # Environment variables
 .env
 .env.local
