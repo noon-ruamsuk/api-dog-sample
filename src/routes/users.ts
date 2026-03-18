@@ -15,6 +15,9 @@ const UserSchema = z.object({
   role: z.string().optional().openapi({
     example: 'user',
   }),
+  status: z.string().optional().openapi({
+    example: 'active',
+  }),
   createdAt: z.string().openapi({
     example: '2024-01-01T00:00:00Z',
   }),
